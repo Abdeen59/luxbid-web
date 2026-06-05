@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تفاصيل المزاد - LuxBid</title>
+<script src="https://sdk.minepi.com/pi-sdk.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:Tajawal,sans-serif;background:#F4F4F8;color:#1A1025;max-width:480px;margin:0 auto;min-height:100vh;padding-bottom:100px;}
+.header{background:linear-gradient(135deg,#4C1D95,#6B35C8);padding:14px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;}
+.back-btn{background:rgba(255,255,255,0.2);border:none;color:white;width:36px;height:36px;border-radius:10px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.header h1{font-size:16px;font-weight:800;color:white;}
+.item-img{width:100%;height:280px;background:linear-gradient(135deg,#EDE9FE,#DDD6FE);display:flex;align-items:center;justify-content:center;font-size:100px;position:relative;}
+.item-badge{position:absolute;top:16px;right:16px;background:linear-gradient(135deg,#6B35C8,#8B5CF6);color:white;padding:6px 16px;border-radius:20px;font-size:12px;font-weight:700;}
+.live-dot{width:8px;height:8px;border-radius:50%;background:#22C55E;display:inline-block;margin-left:6px;animation:blink 1.5s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
+.content{padding:16px;}
+.cat{font-size:11px;font-weight:700;color:#6B35C8;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
+.title{font-size:22px;font-weight:800;color:#1A1025;margin-bottom:4px;line-height:1.3;}
+.origin{font-size:13px;color:#9B9AAA;margin-bottom:16px;}
+.timer-card{background:linear-gradient(135deg,#1A1025,#2D1F45);border-radius:16px;padding:16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
+.timer-label{font-size:11px;color:rgba(255,255,255,0.5);display:block;margin-bottom:4px;}
+.timer-val{font-size:28px;font-weight:800;color:#F5A623;font-family:Poppins;}
+.timer-right{text-align:left;}
+.bids-count{font-size:11px;color:rgba(255,255,255,0.5);display:block;margin-bottom:4px;}
+.bids-num{font-size:22px;font-weight:800;color:white;font-family:Poppins;}
+.price-card{background:white;border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(107,53,200,0.06);}
+.price-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.price-label{font-size:12px;color:#9B9AAA;}
+.price-val{font-size:24px;font-weight:800;color:#6B35C8;font-family:Poppins;}
+.price-start{font-size:14px;color:#9B9AAA;font-family:Poppins;}
+.bid-input-wrap{display:flex;gap:10px;}
+.bid-input{flex:1;padding:12px 14px;border:2px solid #E5E7EB;border-radius:12px;font-size:16px;font-family:Poppins;font-weight:700;outline:none;text-align:center;}
+.bid-input:focus{border-color:#6B35C8;}
+.btn-bid{padding:12px 24px;background:linear-gradient(135deg,#4C1D95,#6B35C8);color:white;border:none;border-radius:12px;font-size:14px;font-weight:700;font-family:Tajawal;cursor:pointer;white-space:nowrap;}
+.desc-card{background:white;border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(107,53,200,0.06);}
+.desc-card h2{font-size:15px;font-weight:800;margin-bottom:10px;}
+.desc-card p{font-size:13px;color:#444;line-height:2;}
+.info-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #F4F4F8;}
+.info-row:last-child{border-bottom:none;}
+.info-label{font-size:12px;color:#9B9AAA;}
+.info-val{font-size:13px;font-weight:700;color:#1A1025;}
+.bids-list{background:white;border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(107,53,200,0.06);}
+.bids-list h2{font-size:15px;font-weight:800;margin-bottom:12px;}
+.bid-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #F4F4F8;}
+.bid-item:last-child{border-bottom:none;}
+.bidder{font-size:13px;font-weight:700;}
+.bid-amount{font-size:14px;font-weight:800;color:#6B35C8;font-family:Poppins;}
+.bid-time{font-size:11px;color:#9B9AAA;}
+.winner-badge{background:#F0FDF4;color:#22C55E;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;}
+.loading{text-align:center;padding:60px 20px;color:#9B9AAA;font-size:16px;}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#1A1025;color:white;padding:12px 24px;border-radius:25px;font-size:13px;display:none;z-index:999;white-space:nowrap;}
+.login-sheet{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;display:none;align-items:flex-end;}
+.login-sheet.show{display:flex;}
+.sheet{background:white;width:100%;max-width:480px;margin:0 auto;border-radius:24px 24px 0 0;padding:28px 24px 40px;}
+.sheet-handle{width:40px;height:4px;background:#F4F4F8;border-radius:2px;margin:0 auto 20px;}
+.sheet h2{font-size:20px;font-weight:800;text-align:center;margin-bottom:8px;}
+.sheet p{font-size:13px;color:#9B9AAA;text-align:center;margin-bottom:24px;}
+.btn-pi{width:100%;padding:14px;background:linear-gradient(135deg,#4C1D95,#6B35C8);color:white;border:none;border-radius:12px;font-size:15px;font-weight:700;font-family:Tajawal;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;}
+</style>
+</head>
+<body>
+<div class="header">
+<button class="back-btn" onclick="history.back()">←</button>
+<h1 id="pageTitle">تفاصيل المزاد</h1>
+</div>
+<div id="loading" class="loading">⏳ جاري التحميل...</div>
+<div id="content" style="display:none">
+<div class="item-img" id="itemImg">
+<span id="itemEmoji">🏺</span>
+<div class="item-badge" id="itemBadge"><span class="live-dot"></span>مزاد حي</div>
+</div>
+<div class="content">
+<div class="cat" id="itemCat">أثريات</div>
+<div class="title" id="itemTitle">جاري التحميل...</div>
+<div class="origin" id="itemOrigin"></div>
+<div class="timer-card">
+<div>
+<span class="timer-label">ينتهي خلال</span>
+<div class="timer-val" id="timerVal">--:--:--</div>
+</div>
+<div class="timer-right">
+<span class="bids-count">عدد المزايدات</span>
+<div class="bids-num" id="bidsCount">0</div>
+</div>
+</div>
+<div class="price-card">
+<div class="price-row">
+<div>
+<div class="price-label">أعلى مزايدة حالياً</div>
+<div class="price-val" id="currentPrice">0 π</div>
+</div>
+<div style="text-align:left">
+<div class="price-label">السعر الابتدائي</div>
+<div class="price-start" id="startPrice">0 π</div>
+</div>
+</div>
+<div class="bid-input-wrap">
+<input type="number" class="bid-input" id="bidAmount" placeholder="أدخل مبلغ المزايدة">
+<button class="btn-bid" id="bidBtn" onclick="placeBid()">زايد الآن</button>
+</div>
+</div>
+<div class="desc-card">
+<h2>📋 تفاصيل المقتنى</h2>
+<div class="info-row"><span class="info-label">الفئة</span><span class="info-val" id="detailCat">-</span></div>
+<div class="info-row"><span class="info-label">المنشأ</span><span class="info-val" id="detailOrigin">-</span></div>
+<div class="info-row"><span class="info-label">تاريخ الانتهاء</span><span class="info-val" id="detailEnd">-</span></div>
+<div class="info-row"><span class="info-label">الحالة</span><span class="info-val" id="detailStatus">-</span></div>
+<p id="itemDesc" style="margin-top:12px"></p>
+</div>
+<div class="bids-list">
+<h2>💰 آخر المزايدات</h2>
+<div id="bidsList"><div style="text-align:center;color:#9B9AAA;padding:20px">لا توجد مزايدات بعد</div></div>
+</div>
+</div>
+</div>
+<div class="toast" id="T"></div>
+<div class="login-sheet" id="LS" onclick="hideLogin(event)">
+<div class="sheet">
+<div class="sheet-handle"></div>
+<h2>سجّل الدخول للمزايدة</h2>
+<p>يجب تسجيل الدخول بحساب Pi للمشاركة في المزادات</p>
+<button class="btn-pi" onclick="loginPi()"><span style="font-size:20px">π</span> تسجيل الدخول بـ Pi</button>
+</div>
+</div>
+<script>
+var sb = null;
+var item = null;
+var user = null;
+var timerInterval = null;
+window.onload = function() {
+var s = document.createElement('script');
+s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/umd/supabase.min.js';
+s.onload = function() {
+sb = supabase.createClient('https://upkqptjkzxyntbvfjakg.supabase.co', 'sb_publishable_yczXvS5DJ42oIVCFxqUHTg_0RE8cbOj');
+loadItem();
+};
+document.head.appendChild(s);
+try { Pi.init({ version: '2.0', sandbox: true }); } catch(e) {}
+};
+function getItemId() {
+var params = new URLSearchParams(window.location.search);
+return params.get('id');
+}
+async function loadItem() {
+var id = getItemId();
+if (!id) { document.getElementById('loading').textContent = 'لم يتم تحديد المزاد'; return; }
+try {
+var r = await sb.from('items').select('*').eq('id', id).single();
+if (r.error) throw r.error;
+item = r.data;
+renderItem();
+loadBids();
+} catch(e) {
+document.getElementById('loading').textContent = 'خطأ في تحميل المزاد';
+}
+}
+function renderItem() {
+var emojis = {'أثريات':'🏺','مجوهرات':'💎','ساعات':'⌚','فن':'🖼️','NFT':'✨'};
+var colors = {'أثريات':'linear-gradient(135deg,#EDE9FE,#DDD6FE)','مجوهرات':'linear-gradient(135deg,#FDF2F8,#FCE7F3)','ساعات':'linear-gradient(135deg,#FEF3C7,#FDE68A)','فن':'linear-gradient(135deg,#EFF6FF,#DBEAFE)'};
+document.getElementById('loading').style.display = 'none';
+document.getElementById('content').style.display = 'block';
+document.getElementById('pageTitle').textContent = item.name;
+document.getElementById('itemEmoji').textContent = emojis[item.category] || '🏛️';
+document.getElementById('itemImg').style.background = colors[item.category] || 'linear-gradient(135deg,#F0FDF4,#DCFCE7)';
+document.getElementById('itemCat').textContent = item.category || '';
+document.getElementById('itemTitle').textContent = item.name;
+document.getElementById('itemOrigin').textContent = item.origin || '';
+document.getElementById('currentPrice').textContent = item.current_price + ' π';
+document.getElementById('startPrice').textContent = item.current_price + ' π';
+document.getElementById('bidAmount').value = item.current_price + 10;
+document.getElementById('detailCat').textContent = item.category || '-';
+document.getElementById('detailOrigin').textContent = item.origin || '-';
+document.getElementById('detailStatus').textContent = item.status === 'active' ? '🟢 نشط' : '🔴 منتهي';
+if (item.end_time) {
+document.getElementById('detailEnd').textContent = new Date(item.end_time).toLocaleString('ar');
+startTimer(new Date(item.end_time));
+}
+}
+function startTimer(endTime) {
+if (timerInterval) clearInterval(timerInterval);
+timerInterval = setInterval(function() {
+var diff = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+var h = Math.floor(diff/3600);
+var m = Math.floor((diff%3600)/60);
+var s = diff%60;
+document.getElementById('timerVal').textContent = [h,m,s].map(function(n){return String(n).padStart(2,'0');}).join(':');
+if (diff === 0) clearInterval(timerInterval);
+}, 1000);
+}
+async function loadBids() {
+var id = getItemId();
+try {
+var r = await sb.from('bids').select('*').eq('item_id', id).order('created_at', {ascending: false}).limit(10);
+document.getElementById('bidsCount').textContent = r.data ? r.data.length : 0;
+var bl = document.getElementById('bidsList');
+if (!r.data || r.data.length === 0) {
+bl.innerHTML = '<div style="text-align:center;color:#9B9AAA;padding:20px">لا توجد مزايدات بعد</div>'; return;
+}
+var h = '';
+for (var i = 0; i < r.data.length; i++) {
+var b = r.data[i];
+var winner = i === 0 ? '<span class="winner-badge">الأعلى</span>' : '';
+h += '<div class="bid-item"><div><div class="bidder">' + (b.bidder_id||'-').substring(0,12) + '... ' + winner + '</div><div class="bid-time">' + new Date(b.created_at).toLocaleString('ar') + '</div></div><div class="bid-amount">' + b.amount + ' π</div></div>';
+}
+bl.innerHTML = h;
+} catch(e) {}
+}
+async function placeBid() {
+if (!user) { document.getElementById('LS').classList.add('show'); return; }
+var amt = parseFloat(document.getElementById('bidAmount').value);
+if (!amt || amt <= item.current_price) { ST('يجب أن يكون المبلغ أعلى من المزايدة الحالية'); return; }
+ST('جاري المزايدة...');
+Pi.createPayment({ amount: amt, memo: 'LuxBid مزاد #' + item.id, metadata: {id: item.id} }, {
+onReadyForServerApproval: async function(pid) {
+await fetch('https://luxbid-pi.onrender.com/approve', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({paymentId:pid}) });
+},
+onReadyForServerCompletion: async function(pid, txid) {
+await fetch('https://luxbid-pi.onrender.com/complete', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({paymentId:pid, txid:txid}) });
+await sb.from('items').update({current_price: amt}).eq('id', item.id);
+await sb.from('bids').insert({item_id: item.id, bidder_id: user.user.uid, amount: amt});
+item.current_price = amt;
+document.getElementById('currentPrice').textContent = amt + ' π';
+document.getElementById('bidAmount').value = amt + 10;
+ST('✅ تمت المزايدة بنجاح!');
+loadBids();
+},
+onCancel: function() { ST('تم إلغاء المزايدة'); },
+onError: function(e) { ST('خطأ: ' + e.message); }
+});
+}
+function loginPi() {
+document.getElementById('LS').classList.remove('show');
+ST('جاري تسجيل الدخول...');
+Pi.authenticate(['username','payments'], function(){}).then(function(u) {
+user = u;
+ST('مرحباً ' + u.user.username);
+}).catch(function(e) { ST('خطأ في تسجيل الدخول'); });
+}
+function hideLogin(e) {
+if (e.target === document.getElementById('LS')) document.getElementById('LS').classList.remove('show');
+}
+function ST(msg) {
+var t = document.getElementById('T');
+t.textContent = msg; t.style.display = 'block';
+setTimeout(function() { t.style.display = 'none'; }, 3000);
+}
+</script>
+</body>
+</html>
