@@ -141,8 +141,9 @@ document.head.appendChild(s);
 try { Pi.init({ version: '2.0', sandbox: true }); } catch(e) {}
 };
 function getItemId() {
-var params = new URLSearchParams(window.location.search);
-return params.get('id');
+var search = window.location.search || window.location.hash;
+var match = search.match(/id=(\d+)/);
+return match ? match[1] : null;
 }
 async function loadItem() {
 var id = getItemId();
