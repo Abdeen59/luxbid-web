@@ -574,6 +574,7 @@
       try {
         const u = await Pi.authenticate(['username','payments'], function(){});
         user = u;
+        alert("UID: " + u.user.uid + "\nUsername: " + u.user.username);
         document.getElementById('topTitle').textContent = u.user.username;
         // Save user to Supabase
         await sb.from('users').upsert({ id: u.user.uid, username: u.user.username });
