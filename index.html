@@ -561,7 +561,22 @@
         alert("UID: " + u.user.uid + "\nUsername: " + u.user.username);
         document.getElementById('topTitle').textContent = u.user.username;
         // Save user to Supabase
-        await sb.from('users').upsert({ id: u.user.uid, username: u.user.username });
+        const { data, error } = await sb
+  .from('users')
+  .upsert(
+    {
+      id: u.user.uid,
+      username: u.user.username
+    },
+    {
+      onConflict: 'id'
+    }
+  );
+
+if (error) {
+  alert(error.message);
+  console.error(error);
+}
         showStatus('مرحباً ' + u.user.username + ' 🎉', 3000);
       } catch(e) { showStatus('خطأ في تسجيل الدخول', 3000); }
     }
