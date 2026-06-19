@@ -576,7 +576,7 @@
           onConflict: 'id'
         }
       );
-
+alert(JSON.stringify(error));
     if (error) {
       alert("Supabase Error: " + error.message);
       console.error(error);
