@@ -553,9 +553,44 @@
         document.getElementById('loginOverlay').classList.remove('show');
     }
     async function loginPi() {
-      document.getElementById('loginOverlay').classList.remove('show');
-      showStatus('جاري تسجيل الدخول...');
-      try {
+  document.getElementById('loginOverlay').classList.remove('show');
+  showStatus('جاري تسجيل الدخول...');
+
+  try {
+    const u = await Pi.authenticate(['username', 'payments'], function(){});
+
+    user = u;
+
+    alert("UID: " + u.user.uid + "\nUsername: " + u.user.username);
+
+    document.getElementById('topTitle').textContent = u.user.username;
+
+    const { error } = await sb
+      .from('users')
+      .upsert(
+        {
+          id: u.user.uid,
+          username: u.user.username
+        },
+        {
+          onConflict: 'id'
+        }
+      );
+
+    if (error) {
+      alert("Supabase Error: " + error.message);
+      console.error(error);
+    } else {
+      alert("تم حفظ المستخدم بنجاح");
+    }
+
+    showStatus('مرحباً ' + u.user.username + ' 🎉', 3000);
+
+  } catch (e) {
+    alert("Login Error: " + e.message);
+    console.error(e);
+    showStatus('خطأ في تسجيل الدخول', 3000);
+  }
         const u = await Pi.authenticate(['username','payments'], function(){});
         user = u;
         alert("UID: " + u.user.uid + "\nUsername: " + u.user.username);
